@@ -13,7 +13,7 @@ class RepositoryTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Check if
+     * Check if repository has a user
      * @return void
      */
     public function test_belongs_to_user(): void
