@@ -41,4 +41,17 @@ class RepositoryController extends Controller
 
         return redirect()->route('repositories.edit', $repository->id);
     }
+
+    /**
+     * Delete a specific repo
+     * @param Repository $repository
+     *
+     * @return RedirectResponse
+     */
+    public function destroy(Repository $repository): RedirectResponse
+    {
+        $repository->delete();
+
+        return redirect()->route('repositories.index');
+    }
 }

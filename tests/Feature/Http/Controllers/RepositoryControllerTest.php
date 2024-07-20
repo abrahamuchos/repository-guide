@@ -39,6 +39,7 @@ class RepositoryControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post('repositories', [])
+            ->assertStatus(302)
             ->assertSessionHasErrors(['url', 'description']);
 
     }
@@ -72,6 +73,7 @@ class RepositoryControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put("repositories/$repository->id", [])
+            ->assertStatus(302)
             ->assertSessionHasErrors(['user_id', 'url', 'description']);
     }
 
@@ -114,5 +116,19 @@ class RepositoryControllerTest extends TestCase
         $this->assertDatabaseHas('repositories', $data);
     }
 
+    public function test_destroy()
+    {
+        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create();
+
+        $this->actingAs($user)
+            ->delete("repositories/$repository->id")
+            ->assertRedirect("repositories");
+        $this->assertDatabaseMissing("repositories", [
+            'id' =>$repository->id
+        ]);
+
+    }
 
 }
