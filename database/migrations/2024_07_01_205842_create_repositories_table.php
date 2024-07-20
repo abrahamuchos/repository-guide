@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('repositories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
+            $table->string('url', 100);
+            $table->string('description', 500);
 
 
             $table->timestamps();

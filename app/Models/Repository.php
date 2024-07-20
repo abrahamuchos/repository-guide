@@ -20,6 +20,14 @@ class Repository extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'url',
+        'description'
+    ];
+
+
+
     /**
      * @return BelongsTo
      */
