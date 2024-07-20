@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Models\Repository;
 use App\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -33,10 +35,10 @@ class RepositoryControllerTest extends TestCase
      */
     public function test_validate_empty_request_store()
     {
-        $prepareStore = $this->_prepareStore(false);
+        $user = User::factory()->create();
 
-        $this->actingAs($prepareStore['user'])
-            ->post('repositories', $prepareStore['data'])
+        $this->actingAs($user)
+            ->post('repositories', [])
             ->assertSessionHasErrors(['url', 'description']);
 
     }
@@ -47,41 +49,70 @@ class RepositoryControllerTest extends TestCase
      */
     public function test_store()
     {
-        $prepareStore = $this->_prepareStore();
+        $data = [
+            'url' => $this->faker->url,
+            'description' => $this->faker->text,
+        ];
+        $user = User::factory()->create();
 
-        $this->actingAs($prepareStore['user'])
-            ->post('repositories', $prepareStore['data'])
+        $this->actingAs($user)
+            ->post('repositories', $data)
             ->assertRedirect('repositories');
-        $this->assertDatabaseHas('repositories', $prepareStore['data']);
+        $this->assertDatabaseHas('repositories', $data);
     }
 
     /**
-     * Prepare data to store new repository
-     *
-     * @param bool $withData
-     *
-     * @return array
+     * Test if request validator works (all data empty)
+     * @return void
      */
-    private function _prepareStore(bool $withData = true): array
+    public function test_validate_empty_request_put()
     {
-        if($withData){
-            $data = [
-                'url' => $this->faker->url,
-                'description' => $this->faker->text,
-            ];
-        }else{
-            $data = [
-                'url' => null,
-                'description' => null,
-            ];
-        }
-
         $user = User::factory()->create();
+        $repository = Repository::factory()->create();
 
-        return [
-            'user' => $user,
-            'data' => $data
-        ];
+        $this->actingAs($user)
+            ->put("repositories/$repository->id", [])
+            ->assertSessionHasErrors(['user_id', 'url', 'description']);
     }
+
+    /**
+     * Test if put repository
+     * @return void
+     */
+    public function test_put_update()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create();
+        $data = [
+            'user_id' => $repository->user_id,
+            'url' => $this->faker->url,
+            'description' => $this->faker->text,
+        ];
+
+        $this->actingAs($user)
+            ->put("repositories/$repository->id", $data)
+            ->assertRedirect("repositories/$repository->id/edit");
+        $this->assertDatabaseHas('repositories', $data);
+    }
+
+    /**
+     * Test if patch repository
+     * @return void
+     */
+    public function test_patch_update()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create();
+        $data = [
+            'url' => $this->faker->url,
+            'description' => $this->faker->text,
+        ];
+
+        $this->actingAs($user)
+            ->patch("repositories/$repository->id", $data)
+            ->assertRedirect("repositories/$repository->id/edit");
+        $this->assertDatabaseHas('repositories', $data);
+    }
+
 
 }
