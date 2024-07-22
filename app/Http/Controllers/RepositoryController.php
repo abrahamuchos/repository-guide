@@ -4,12 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateRepositoryRequest;
 use App\Models\Repository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RepositoryController extends Controller
 {
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function index(): Factory|View|\Illuminate\Foundation\Application|Application
+    {
+        $user = Auth::user();
+        $repositories = Repository::where('user_id', $user->id)->get();
+
+        return view('repositories.index', [
+           'repositories' => $repositories
+        ]);
+    }
+
+    /**
+     * @param Repository $repository
+     *
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function show(Repository $repository): Factory|View|\Illuminate\Foundation\Application|Application
+    {
+        if($repository->user_id !== Auth::user()->id){
+            abort(403);
+        }
+
+        return view('repositories.show', [
+            'repository' => $repository
+        ]);
+    }
+
+
     /**
      * Store a new repository
      * @param Request $request
