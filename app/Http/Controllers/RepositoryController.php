@@ -42,6 +42,14 @@ class RepositoryController extends Controller
         ]);
     }
 
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function create(): Factory|View|\Illuminate\Foundation\Application|Application
+    {
+        return view('repositories.create');
+    }
+
 
     /**
      * Store a new repository
@@ -60,6 +68,22 @@ class RepositoryController extends Controller
 
 
         return redirect()->route('repositories.index');
+    }
+
+    /**
+     * @param Repository $repository
+     *
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function edit(Repository $repository): Factory|View|\Illuminate\Foundation\Application|Application
+    {
+        if($repository->user_id !== Auth::user()->id){
+            abort(403);
+        }
+
+        return view('repositories.edit', [
+            'repository' => $repository
+        ]);
     }
 
     /**

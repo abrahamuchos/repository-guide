@@ -121,6 +121,20 @@ class RepositoryControllerTest extends TestCase
     }
 
     /**
+     * Test create view
+     * @return void
+     */
+    public function test_create()
+    {
+        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('repositories/create')
+            ->assertStatus(200);
+    }
+
+    /**
      * Test if repository is saved
      * @return void
      */
@@ -136,6 +150,52 @@ class RepositoryControllerTest extends TestCase
             ->post('repositories', $data)
             ->assertRedirect('repositories');
         $this->assertDatabaseHas('repositories', $data);
+    }
+
+    /**
+     * Test if repository not exists
+     * @return void
+     */
+    public function test_edit_not_found()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get("repositories/10000/edit")
+            ->assertStatus(404);
+    }
+
+    /**
+     * Test edit form
+     * @return void
+     */
+    public function test_edit_policy()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create();
+
+        $this->actingAs($user)
+            ->get("repositories/$repository->id/edit")
+            ->assertStatus(403);
+
+    }
+
+    /**
+     * Test if can edit repository
+     * @return void
+     */
+    public function test_edit()
+    {
+//        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get("repositories/$repository->id/edit")
+            ->assertStatus(200)
+            ->assertSee($repository->url)
+            ->assertSee($repository->description);
+
     }
 
     /**
