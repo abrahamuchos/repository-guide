@@ -63,13 +63,32 @@ class RepositoryControllerTest extends TestCase
     }
 
     /**
+     * Test access policies to update a repo.
+     * @return void
+     */
+    public function test_update_policy()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create();
+        $data = [
+            'user_id' => $repository->user_id,
+            'url' => $this->faker->url,
+            'description' => $this->faker->text,
+        ];
+
+        $this->actingAs($user)
+            ->put("repositories/$repository->id", $data)
+            ->assertStatus(403);
+    }
+
+    /**
      * Test if request validator works (all data empty)
      * @return void
      */
     public function test_validate_empty_request_put()
     {
         $user = User::factory()->create();
-        $repository = Repository::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user)
             ->put("repositories/$repository->id", [])
@@ -84,7 +103,7 @@ class RepositoryControllerTest extends TestCase
     public function test_put_update()
     {
         $user = User::factory()->create();
-        $repository = Repository::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
         $data = [
             'user_id' => $repository->user_id,
             'url' => $this->faker->url,
@@ -104,7 +123,7 @@ class RepositoryControllerTest extends TestCase
     public function test_patch_update()
     {
         $user = User::factory()->create();
-        $repository = Repository::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
         $data = [
             'url' => $this->faker->url,
             'description' => $this->faker->text,
@@ -116,11 +135,21 @@ class RepositoryControllerTest extends TestCase
         $this->assertDatabaseHas('repositories', $data);
     }
 
-    public function test_destroy()
+    public function test_destroy_policy()
     {
-        $this->withoutExceptionHandling();
         $user = User::factory()->create();
         $repository = Repository::factory()->create();
+
+        $this->actingAs($user)
+            ->delete("repositories/$repository->id")
+            ->assertStatus(403);
+    }
+
+    public function test_destroy()
+    {
+//        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user)
             ->delete("repositories/$repository->id")

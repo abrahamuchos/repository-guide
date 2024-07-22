@@ -6,6 +6,7 @@ use App\Http\Requests\UpdateRepositoryRequest;
 use App\Models\Repository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RepositoryController extends Controller
 {
@@ -50,6 +51,10 @@ class RepositoryController extends Controller
      */
     public function destroy(Repository $repository): RedirectResponse
     {
+        if(Auth::user()->id !== $repository->user_id){
+            abort(403);
+        }
+
         $repository->delete();
 
         return redirect()->route('repositories.index');
