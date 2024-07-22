@@ -30,6 +30,82 @@ class RepositoryControllerTest extends TestCase
     }
 
     /**
+     * Test if index without repos
+     * @return void
+     */
+    public function test_index_empty()
+    {
+        $this->withoutExceptionHandling();
+        Repository::factory()->create();
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('repositories')
+            ->assertStatus(200)
+            ->assertSee('No hay repositorios');
+
+    }
+
+    /**
+     * Test index with all repositories by user
+     * @return void
+     */
+    public function test_index()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get('repositories')
+            ->assertStatus(200)
+            ->assertSee($repository->id)
+            ->assertSee($repository->url);
+    }
+
+    /**
+     * Test if shows a non-user repository
+     * @return void
+     */
+    public function test_show_policy()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create();
+
+        $this->actingAs($user)
+            ->get("repositories/$repository->id")
+            ->assertStatus(403);
+    }
+
+    /**
+     * Test if repository not exists
+     * @return void
+     */
+    public function test_show_not_found()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get("repositories/1000")
+            ->assertStatus(404);
+    }
+
+    /**
+     * Test if shows a repository
+     * @return void
+     */
+    public function test_show()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get("repositories/$repository->id")
+            ->assertStatus(200)
+            ->assertSee($repository->id);
+
+    }
+
+    /**
      * Test if request validator works (all data empty)
      * @return void
      */
