@@ -22,10 +22,14 @@
                                 <td class="border px-4 py-2">
                                     <a href="{{route('repositories.show'), $repository}}">Ver</a>
                                 </td>
+                                <td class="border px-4 py-2">
+                                    <a href="{{route('repositories.edit'), $repository}}">Editar</a>
+                                </td>
+
                             </tr>
                         @empty
                             <tr>
-                                <td>
+                                <td colspan="4">
                                     <h1>No hay repositorios </h1>
                                 </td>
                             </tr>
