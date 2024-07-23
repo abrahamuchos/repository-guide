@@ -40,7 +40,7 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="m1 9 4-4-4-4"/>
                         </svg>
-                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Editar - {{$repository->description}}</span>
+                        <p class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400 w-[70%] h-[1.1em] truncate">Editar - {{$repository->description}}</p>
                     </div>
                 </li>
             </ol>
@@ -51,7 +51,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
-                <form action="{{route('repositories.update', $repository)}}" method="POST" class="max-w-mg">
+                <form action="{{route('repositories.update', $repository)}}" method="POST" class="max-w-mg" id="form-edit">
                     @csrf
                     @method('PATCH')
 
@@ -61,10 +61,19 @@
                     <label class="block font-medium text-sm text-gray-700">Description *</label>
                     <textarea class="form-input w-full rounded-md shadow-sm" name="description">{{$repository->description}}</textarea>
 
-                    <hr class="my-4">
-
-                    <input type="submit" value="Editar" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md ">
                 </form>
+
+                <hr class="my-4">
+
+                <div class="flex w-full justify-center">
+                    <input type="submit" value="Editar" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md cursor-pointer hover:bg-blue-700">
+                    <form action="{{route('repositories.destroy', $repository)}}" method="POST">
+                        @csrf
+                        @method('DELETE')
+
+                        <input type="submit" value="Eliminar" class="bg-gray-400 text-white font-bold py-2 px-4 rounded-md ml-5 cursor-pointer hover:bg-red-700">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
