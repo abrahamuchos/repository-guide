@@ -11,6 +11,15 @@
 
     </head>
     <body class="bg-gray-200">
+        <nav class="flex justify-end px-5 py-3">
+            <a href="{{route('register')}}" class="text-md text-blue-500 mr-4 hover:text-blue-700">
+                Registrarse
+            </a>
+            <a href="{{route('login')}}" class="text-md text-gray-500 mr-4 hover:text-gray-700">
+                Iniciar sesión
+            </a>
+        </nav>
+
         <section class="m-8">
             <ul class="bg-white border-r border-gray-300 shadow-xl">
                 @forelse ($repositories as $repository)

@@ -40,7 +40,7 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="m1 9 4-4-4-4"/>
                         </svg>
-                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Ver - {{$repository->description}}</span>
+                        <p class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400 w-[70%] h-[1.1em] truncate">Ver - {{$repository->description}}</p>
                     </div>
                 </li>
             </ol>
