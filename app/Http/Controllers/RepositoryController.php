@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateRepositoryRequest;
 use App\Models\Repository;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RepositoryController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * @return Application|Factory|View|\Illuminate\Foundation\Application
      */
@@ -30,12 +34,11 @@ class RepositoryController extends Controller
      * @param Repository $repository
      *
      * @return Application|Factory|View|\Illuminate\Foundation\Application
+     * @throws AuthorizationException
      */
     public function show(Repository $repository): Factory|View|\Illuminate\Foundation\Application|Application
     {
-        if($repository->user_id !== Auth::user()->id){
-            abort(403);
-        }
+        $this->authorize('pass', $repository);
 
         return view('repositories.show', [
             'repository' => $repository
@@ -74,12 +77,11 @@ class RepositoryController extends Controller
      * @param Repository $repository
      *
      * @return Application|Factory|View|\Illuminate\Foundation\Application
+     * @throws AuthorizationException
      */
     public function edit(Repository $repository): Factory|View|\Illuminate\Foundation\Application|Application
     {
-        if($repository->user_id !== Auth::user()->id){
-            abort(403);
-        }
+        $this->authorize('pass', $repository);
 
         return view('repositories.edit', [
             'repository' => $repository
@@ -101,15 +103,15 @@ class RepositoryController extends Controller
 
     /**
      * Delete a specific repo
+     *
      * @param Repository $repository
      *
      * @return RedirectResponse
+     * @throws AuthorizationException
      */
     public function destroy(Repository $repository): RedirectResponse
     {
-        if(Auth::user()->id !== $repository->user_id){
-            abort(403);
-        }
+        $this->authorize('pass', $repository);
 
         $repository->delete();
 
